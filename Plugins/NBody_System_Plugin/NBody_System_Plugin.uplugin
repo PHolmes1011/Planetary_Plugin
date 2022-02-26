@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "NBody_System_Plugin",
+	"Description": "A plugin for simulating N-body systems",
+	"Category": "Other",
+	"CreatedBy": "Peter Holmes",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "NBody_System_Plugin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
