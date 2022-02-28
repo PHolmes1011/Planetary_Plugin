@@ -23,10 +23,11 @@
 #include "NBody_System_Objects.generated.h"
 
 // ///////////////////////////////////////////////////////////////
-//						UPlanetObject Class
+//					   UPlanetManager Class
 // ///////////////////////////////////////////////////////////////
+// The manager class for the NBody system
 
-UCLASS(BlueprintType, hidecategories=(Object))						// Macro adds several modern features and exposes the class...
+UCLASS(Blueprintable, hidecategories=(Object))						// Macro adds several modern features and exposes the class...
 class NBODY_SYSTEM_PLUGIN_API UPlanetManager : public UObject		// as an Unreal object that can be used in the editor and as a blueprint.
 {
 	// === GENERATED_BODY Macro ===
@@ -36,9 +37,31 @@ class NBODY_SYSTEM_PLUGIN_API UPlanetManager : public UObject		// as an Unreal o
 public:
 	// === UPlanetObject Attributes ===
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlanetCount")		// Macro exposes the variable to the editor
-	int32  bodyCount;															// Number of bodies in the system
+	int32  m_bodyCount;														// Number of bodies in the system
 
 	// === UPlanetObject Methods ===
 
 };
+
+// ///////////////////////////////////////////////////////////////
+//						UPlanetObject Class
+// ///////////////////////////////////////////////////////////////
+// The class for objects in the system
+
+UCLASS(BlueprintType, hidecategories = (Object))						
+class NBODY_SYSTEM_PLUGIN_API UPlanetObject : public UObject			
+{
+	// === GENERATED_BODY Macro ===
+	// Creates the above .generate.h file full of glue code 
+	GENERATED_BODY()
+
+public:
+	// === UPlanetObject Attributes ===
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Diameter")		
+	int32  m_diameter;
+
+	// === UPlanetObject Methods ===
+
+};
+
 #pragma once
