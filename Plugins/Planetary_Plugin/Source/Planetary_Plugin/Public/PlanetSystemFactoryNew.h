@@ -8,16 +8,15 @@
 
 #include "CoreMinimal.h"
 #include "Factories/Factory.h"
-#include "PlanetObject.h"
 
-#include "PlanetObjectFactoryNew.generated.h"
+#include "PlanetSystemFactoryNew.generated.h"
 
 // ///////////////////////////////////////////////////////////////
-//					 UPlanetObjectFactoryNew
+//					 UPlanetSystemFactoryNew
 // ///////////////////////////////////////////////////////////////
 
 UCLASS()
-class PLANETARY_PLUGIN_API UPlanetObjectFactoryNew : public UFactory
+class PLANETARY_PLUGIN_API UPlanetSystemFactoryNew : public UFactory
 {
 	GENERATED_UCLASS_BODY()
 
