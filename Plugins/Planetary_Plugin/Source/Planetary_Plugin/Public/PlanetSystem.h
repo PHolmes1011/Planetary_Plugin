@@ -31,15 +31,16 @@ public:
 
 	// ===== UPlanetSystem Attributes =====
 	// mNumOfBodies - How many bodies are in the system
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Number of Bodies")
+	UPROPERTY(EditAnywhere, DisplayName = "Number of Bodies")
 	int32  mNumOfBodies;
 
 	// mPlanetObjects - Internal array of all created planets in the system
-	TArray<APlanetObject> mPlanetObjects;
+	UPROPERTY(EditAnywhere, DisplayName = "Planet Array")
+	TArray<APlanetObject*> mPlanetObjects;
 
 	// mVisibleHub - Should the centre of the system have an associated model
 	// [ Set to true by default, but can be changed should you wish ]
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Has Visible Centre")
+	UPROPERTY(EditAnywhere, DisplayName = "Has Visible Centre")
 	bool mVisibleHub = true;
 
 protected:

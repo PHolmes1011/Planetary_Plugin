@@ -9,6 +9,7 @@
 // Engine includes
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
 // Generated file
 #include "PlanetObject.generated.h"
 
@@ -26,8 +27,11 @@ public:
 	APlanetObject();
 
 	// === UPlanetObject Attributes ===
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Diameter")
-	int32  m_diameter;
+	UPROPERTY(EditAnywhere, DisplayName = "Size")
+	int32  mSize = 10;
+
+	UPROPERTY(VisibleAnywhere, DisplayName = "PlanetModel")
+	class UStaticMeshComponent* mPlanetModel;
 
 	// === UPlanetObject Methods ===
 protected:
