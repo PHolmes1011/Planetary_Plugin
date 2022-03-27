@@ -36,6 +36,5 @@ void APlanetObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	mPlanetModel->SetWorldScale3D(FVector(mSize));
 }
 
