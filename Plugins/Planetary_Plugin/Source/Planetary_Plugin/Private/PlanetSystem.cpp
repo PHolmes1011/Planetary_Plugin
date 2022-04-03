@@ -16,7 +16,6 @@ void APlanetSystem::BeginPlay()
 	Super::BeginPlay();
 	
 	
-
 }
 
 // Called every frame
@@ -25,24 +24,25 @@ void APlanetSystem::TickActor(float DeltaTime, enum ELevelTick TickType, FActorT
 	Super::TickActor(DeltaTime, TickType, ThisTickFunction);
 
 	// ====================================================
-	//				Call Editor Functions 
+	//				 Game/Level Update
+	// ====================================================
+	if (TickType == ELevelTick::LEVELTICK_All)
+	{
+		// When the play button in the editor is pressed and the game is running
+		GameUpdate(DeltaTime);
+	}
+
+	// ====================================================
+	//				 In-Editor Update 
 	// ====================================================
 	if (TickType == ELevelTick::LEVELTICK_ViewportsOnly)
 	{
-		// Update the planetary system if a change is detected
-		EditorUpdate();
-	}
-
-	// ====================================================
-	//				Call Non-Editor Functions 
-	// ====================================================
-	if (TickType == ELevelTick::LEVELTICK_TimeOnly)
-	{
-		// Do some ticking logic here
+		// Update the objects inside the editor with some additional editor functionality
+		EditorUpdate(DeltaTime);
 	}
 }
 
-void APlanetSystem::EditorUpdate()
+void APlanetSystem::EditorUpdate(float DeltaTime)
 {
 	// Calculate the difference between how many bodies we want and how many we have
 	int32 sizeDif = mNumOfBodies - mPlanetObjects.Num();
@@ -55,7 +55,7 @@ void APlanetSystem::EditorUpdate()
 
 		// The function to spawn a new planet
 		APlanetObject* planetObject = GWorld->SpawnActor<APlanetObject>(APlanetObject::StaticClass(),
-			this->GetActorLocation() + FVector(mI * 500.f, this->GetActorLocation().Y, this->GetActorLocation().Z),
+			this->GetActorLocation() + FVector(mI * 750.f, this->GetActorLocation().Y, this->GetActorLocation().Z),
 			FRotator::ZeroRotator, planetSpawnInfo);
 
 		// Assert the spawning didn't fail
@@ -80,3 +80,10 @@ void APlanetSystem::EditorUpdate()
 	}
 }
 
+void APlanetSystem::GameUpdate(float DeltaTime)
+{
+	for (int32 i = 0; i < mPlanetObjects.Num(); ++i) {
+		mPlanetObjects[i]->UpdateVelocity(DeltaTime, mPlanetObjects);
+		mPlanetObjects[i]->MoveBody(DeltaTime);
+	}
+}

@@ -51,6 +51,12 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	// Name: GetBodies - Get all the bodies in the system
+	// In: NONE
+	// Out: TArray of APlanetObject*
+	const TArray<APlanetObject*> GetBodies() const { return mPlanetObjects; }
+
+private:
 	// ===== UPlanetSystem Methods =====
 	// Name: Tick - Update the necessary information each tick depending on state
 	// In: DeltaTime, TickType, ThisTickFunction
@@ -61,16 +67,18 @@ public:
 	// In: NONE
 	// Out: bool
 	bool ShouldTickIfViewportsOnly() const override { return true; }
-
-private:
-	// Name: EditorUpdate - Check and update the system when in editor mode
+	// Name: EditorUpdate - Update editor time information
 	// In: DeltaTime
 	// Out: NONE
-	void EditorUpdate();
+	void EditorUpdate(float DeltaTime);
+	// Name: GameUpdate - Update level time information
+	// In: DeltaTime
+	// Out: NONE
+	void GameUpdate(float DeltaTime);
 
 	// The counter used to count how many planets exist
 	uint32 mI = 0;
-	// Dude to names apparently never being deleted we need a counter
+	// Due to names apparently never being deleted we need a counter
 	// to always make new ones, even if old ones are deleted.
 	uint32 mNameI = 0;
 

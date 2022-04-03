@@ -5,6 +5,18 @@
 
 #include "UObject/ConstructorHelpers.h"
 
+namespace MATHS
+{
+	// Gravitational constant
+	const float G = 0.674;
+
+	// Vector modulus function
+	float Modulus(FVector in)
+	{
+		return in.X + in.Y + in.Z / sqrt((in.X * in.X) + (in.Y * in.Y) + (in.Z * in.Z));	
+	}
+}
+
 // Sets default values
 APlanetObject::APlanetObject()
 {
@@ -13,6 +25,8 @@ APlanetObject::APlanetObject()
 
 	CreatePlanetModel();
 
+	mVelocity = mInitVelocity;
+
 }
 
 // Called when the game starts or when spawned
@@ -20,7 +34,7 @@ void APlanetObject::BeginPlay()
 {
 	Super::BeginPlay();
 		
-	
+	mVelocity = mInitVelocity;
 }
 
 // Called every frame
@@ -29,34 +43,36 @@ void APlanetObject::TickActor(float DeltaTime, enum ELevelTick TickType, FActorT
 	Super::TickActor(DeltaTime, TickType, ThisTickFunction);
 
 	// ====================================================
-	//				Call Editor Functions 
+	//				 Game/Level Update
 	// ====================================================
-	if (TickType == ELevelTick::LEVELTICK_ViewportsOnly)
+	if (TickType == ELevelTick::LEVELTICK_All)
 	{
-		// Update the planetary system if a change is detected
-		EditorUpdate();
+		// When the play button in the editor is pressed and the game is running
+		GameUpdate(DeltaTime);
 	}
 
 	// ====================================================
-	//				Call Non-Editor Functions 
+	//				 In-Editor Update 
 	// ====================================================
-	if (TickType == ELevelTick::LEVELTICK_TimeOnly)
+	if (TickType == ELevelTick::LEVELTICK_ViewportsOnly)
 	{
-		// Do some ticking logic here
+		// Update the objects inside the editor with some additional editor functionality
+		EditorUpdate(DeltaTime);
 	}
 
 }
 
-void APlanetObject::EditorUpdate()
+void APlanetObject::EditorUpdate(float DeltaTime)
 {	
+	// Update the size of the object in real-time
 	mPlanetModel->SetRelativeScale3D(FVector(mSize));
 
 	
 }
 
-void APlanetObject::GameUpdate()
+void APlanetObject::GameUpdate(float DeltaTime)
 {
-
+	
 }
 
 void APlanetObject::DestroyPlanetModel()
@@ -72,11 +88,39 @@ void APlanetObject::CreatePlanetModel()
 	UStaticMesh* mesh = MeshAsset.Object;
 
 	mPlanetModel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlanetMesh"));
-	mPlanetModel->SetHiddenInGame(false, true);		// and set it and its children to be visible
+	mPlanetModel->SetHiddenInGame(false, true);			// and set it and its children to be visible
 	mPlanetModel->SetRelativeScale3D(FVector(mSize));	// and set the size here
-	mPlanetModel->SetStaticMesh(mesh);				// and set the default here
+	mPlanetModel->SetStaticMesh(mesh);					// and set the default here
 	mPlanetModel->SetupAttachment(RootComponent);
 }
 
+void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodies)
+{
+	// For all the bodies calculate their velocity
+	// This is done by "Newton's law of universal gravitation" formula: F = G*m1*m2 / r^2
+	// This code was taken from Sebastian Lague's video on coding solar systems
+	// Sebastian Lague's channel: https://www.youtube.com/channel/UCmtyQOKKmrMVaKuRXz02jbQ
+	// The video in question at time: https://youtu.be/7axImc1sxa0?t=51
+	for (int32 i = 0; i < bodies.Num(); ++i) {
+		if (bodies[i] != this) {
+			// Distance between two bodies
+			float sqrDist = MATHS::Modulus(bodies[i]->GetActorLocation() - this->GetActorLocation());
+			// Nomralised direction to apply the force
+			FVector forceDir = FVector((bodies[i]->GetActorLocation() - this->GetActorLocation()).Normalize());
+			// The force applied along that direction
+			FVector force = forceDir * MATHS::G * mMass * bodies[i]->mMass / sqrDist;
+			// Find acceleration to add to our velocity
+			FVector acceleration = force / mMass;
 
+			// Set that as our velocity multiplied with delta time
+			mVelocity += acceleration * DeltaTime;
+		}
+	}
+}
 
+void APlanetObject::MoveBody(float DeltaTime)
+{
+	FRotator rotator;
+	mPlanetModel->AddWorldRotation(rotator.Add(mRotVel.Y, mRotVel.Z, mRotVel.X));
+	SetActorLocation(GetActorLocation() += mVelocity * DeltaTime);
+}

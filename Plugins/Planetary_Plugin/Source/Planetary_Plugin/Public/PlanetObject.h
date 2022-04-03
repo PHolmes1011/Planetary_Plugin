@@ -27,25 +27,31 @@ public:
 	APlanetObject();
 
 	// === UPlanetObject Attributes ===
-	UPROPERTY(EditAnywhere, DisplayName = "Size")
-	uint32  mSize = 2;
+	// How large the body is
+	UPROPERTY(EditAnywhere, DisplayName = "Size", meta=(ClampMin = "0", UIMin = "0"))
+	float  mSize = 2;
 
+	// Precalculate the orbit necessary
 	UPROPERTY(EditAnywhere, DisplayName = "Auto Orbit")
-	bool mAutoOrbit = true;
+	bool mAutoOrbit = false;
 
-	UPROPERTY(EditAnywhere, DisplayName = "Density")
-	uint32  mDensity = 1;
+	// The mass of the object
+	UPROPERTY(EditAnywhere, DisplayName = "Mass", meta = (ClampMin = "0", UIMin = "0"))
+	float  mMass = 1;
 
-	UPROPERTY(EditAnywhere, DisplayName = "Mass")
-	uint32  mMass = 1;
+	// The initial velocity to apply to the body
+	UPROPERTY(EditAnywhere, DisplayName = "Starting Velocity")
+	FVector  mInitVelocity = FVector(0.f, 1.f, 0.f);
+	// The calculated velocity to move the body by based on the orbit
+	FVector  mVelocity = FVector(0.f, 0.f, 0.f);
 
-	UPROPERTY(EditAnywhere, DisplayName = "Velocity")
-	FVector  mVelocity = FVector(1.f, 0.f, 0.f);
+	UPROPERTY(EditAnywhere, DisplayName = "Rotational Velocity")
+	FVector mRotVel = FVector(0.f, 0.f, 1.f);
 
+	// The visual representation of the body
 	UPROPERTY(VisibleAnywhere, DisplayName = "PlanetModel")
 	class UStaticMeshComponent* mPlanetModel;
 
-	// === UPlanetObject Methods ===
 protected:
 	// ===== APlanetObject Methods =====
 	// Name: BeginPlay - Setup the planetary system when the game starts or when spawned
@@ -53,25 +59,38 @@ protected:
 	// Out: NONE
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// ===== APlanetObject Methods =====
+	// Name: UpdateVelocity - Calculate the new velocity based on orbit and other bodies
+	// In: DeltaTime, bodies
+	// Out: NONE
+	void UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodies);
+	// Name: MoveBody - Adds an impulse to the body to move it
+	// In: DeltaTime
+	// Out: NONE
+	void MoveBody(float DeltaTime);
+private:	
 	// Name: Tick - Update the necessary information each tick
 	// In: DeltaTime
 	// Out: NONE
 	virtual void TickActor(float DeltaTime, enum ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
-
-	void CreatePlanetModel();
-	inline void DestroyPlanetModel();
 	// Name: EditorUpdate - Update editor time information
-	// In: NONE
+	// In: DeltaTime
 	// Out: NONE
-	void EditorUpdate();
+	void EditorUpdate(float DeltaTime);
 	// Name: GameUpdate - Update level time information
+	// In: DeltaTime
+	// Out: NONE
+	void GameUpdate(float DeltaTime);
+	// Name: CreatePlanetModel - Creates a default spherical planet
 	// In: NONE
 	// Out: NONE
-	void GameUpdate();
+	void CreatePlanetModel();
+	// Name: DestroyPlanetModel - Destroys the existing planet
+	// In: NONE
+	// Out: NONE
+	inline void DestroyPlanetModel();
 
-	// ===== APlanetObject Methods =====
 	// Name: ShouldTickIfViewportsOnly - Allows Tick to be called in editor
 	// In: NONE
 	// Out: bool
