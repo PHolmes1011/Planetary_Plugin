@@ -105,7 +105,7 @@ void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodie
 		if (bodies[i] != this) {
 			// Distance between two bodies
 			float sqrDist = MATHS::Modulus(bodies[i]->GetActorLocation() - this->GetActorLocation());
-			// Nomralised direction to apply the force
+			// Normalised direction to apply the force
 			FVector forceDir = FVector((bodies[i]->GetActorLocation() - this->GetActorLocation()).Normalize());
 			// The force applied along that direction
 			FVector force = forceDir * MATHS::G * mMass * bodies[i]->mMass / sqrDist;
@@ -113,7 +113,7 @@ void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodie
 			FVector acceleration = force / mMass;
 
 			// Set that as our velocity multiplied with delta time
-			mVelocity += acceleration * DeltaTime;
+			mVelocity += acceleration * DeltaTime;		
 		}
 	}
 }

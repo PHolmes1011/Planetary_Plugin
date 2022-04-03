@@ -41,7 +41,11 @@ public:
 	// mVisibleHub - Should the centre of the system have an associated model
 	// [ Set to true by default, but can be changed should you wish ]
 	UPROPERTY(EditAnywhere, DisplayName = "Has Visible Centre")
-	bool mVisibleHub = true;
+	bool mVisibleHub = false;
+
+	// Enable debug features
+	UPROPERTY(EditAnywhere, DisplayName = "Debug Mode")
+	bool mDebug = false;
 
 protected:
 	// ===== UPlanetSystem Methods =====

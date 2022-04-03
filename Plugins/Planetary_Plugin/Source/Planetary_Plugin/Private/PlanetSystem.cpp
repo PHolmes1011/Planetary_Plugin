@@ -82,8 +82,18 @@ void APlanetSystem::EditorUpdate(float DeltaTime)
 
 void APlanetSystem::GameUpdate(float DeltaTime)
 {
+	GEngine->ClearOnScreenDebugMessages();
+
 	for (int32 i = 0; i < mPlanetObjects.Num(); ++i) {
 		mPlanetObjects[i]->UpdateVelocity(DeltaTime, mPlanetObjects);
 		mPlanetObjects[i]->MoveBody(DeltaTime);
+
+		if (mDebug) {
+			FString debugmsg = mPlanetObjects[i]->GetName() + " velocity is: " + 
+				FString::SanitizeFloat(mPlanetObjects[i]->mVelocity.X) +
+				", " + FString::SanitizeFloat(mPlanetObjects[i]->mVelocity.Y) +
+				", " + FString::SanitizeFloat(mPlanetObjects[i]->mVelocity.Z);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
+		}
 	}
 }
