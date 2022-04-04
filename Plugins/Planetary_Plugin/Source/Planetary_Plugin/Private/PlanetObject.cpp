@@ -8,12 +8,12 @@
 namespace MATHS
 {
 	// Gravitational constant
-	const float G = 0.674;
+	const float G = 1.0001f;
 
-	// Vector modulus function
-	float Modulus(FVector in)
+	// Vector SqModulus function
+	float SqModulus(FVector in)
 	{
-		return in.X + in.Y + in.Z / sqrt((in.X * in.X) + (in.Y * in.Y) + (in.Z * in.Z));	
+		return ((in.X * in.X) + (in.Y * in.Y) + (in.Z * in.Z));
 	}
 }
 
@@ -72,7 +72,7 @@ void APlanetObject::EditorUpdate(float DeltaTime)
 
 void APlanetObject::GameUpdate(float DeltaTime)
 {
-	
+	mTimeStep += 0.01f;
 }
 
 void APlanetObject::DestroyPlanetModel()
@@ -96,6 +96,8 @@ void APlanetObject::CreatePlanetModel()
 
 void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodies)
 {
+	GEngine->ClearOnScreenDebugMessages();
+
 	// For all the bodies calculate their velocity
 	// This is done by "Newton's law of universal gravitation" formula: F = G*m1*m2 / r^2
 	// This code was taken from Sebastian Lague's video on coding solar systems
@@ -104,16 +106,36 @@ void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodie
 	for (int32 i = 0; i < bodies.Num(); ++i) {
 		if (bodies[i] != this) {
 			// Distance between two bodies
-			float sqrDist = MATHS::Modulus(bodies[i]->GetActorLocation() - this->GetActorLocation());
+			float sqrDist = MATHS::SqModulus(bodies[i]->GetActorLocation() - this->GetActorLocation());
 			// Normalised direction to apply the force
-			FVector forceDir = FVector((bodies[i]->GetActorLocation() - this->GetActorLocation()).Normalize());
+			FVector forceDir = (bodies[i]->GetActorLocation() - this->GetActorLocation()).GetSafeNormal();
 			// The force applied along that direction
-			FVector force = forceDir * MATHS::G * mMass * bodies[i]->mMass / sqrDist;
+			FVector force = forceDir * MATHS::G * bodies[i]->mMass / sqrDist;
 			// Find acceleration to add to our velocity
 			FVector acceleration = force / mMass;
 
 			// Set that as our velocity multiplied with delta time
-			mVelocity += acceleration * DeltaTime;		
+			mVelocity += acceleration * mTimeStep;
+
+			FString debugmsg = "__________________________";
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
+
+			debugmsg = "force = (" + FString::SanitizeFloat(forceDir.X) + ", " + FString::SanitizeFloat(forceDir.Y) + ", " + FString::SanitizeFloat(forceDir.Z) + ") * " + FString::SanitizeFloat(MATHS::G) + " * " + FString::SanitizeFloat(bodies[i]->mMass) + " / " + FString::SanitizeFloat(sqrDist);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
+
+			debugmsg = "forceDir is: " +
+				FString::SanitizeFloat(forceDir.X) +
+				", " + FString::SanitizeFloat(forceDir.Y) +
+				", " + FString::SanitizeFloat(forceDir.Z);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
+
+			debugmsg = "force is: " +
+				FString::SanitizeFloat(force.X) +
+				", " + FString::SanitizeFloat(force.Y) +
+				", " + FString::SanitizeFloat(force.Z);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
+
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString(GetName()));
 		}
 	}
 }

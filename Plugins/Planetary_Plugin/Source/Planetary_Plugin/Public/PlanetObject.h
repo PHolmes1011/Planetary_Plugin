@@ -52,6 +52,8 @@ public:
 	UPROPERTY(VisibleAnywhere, DisplayName = "PlanetModel")
 	class UStaticMeshComponent* mPlanetModel;
 
+	float mTimeStep = 0.1f;
+
 protected:
 	// ===== APlanetObject Methods =====
 	// Name: BeginPlay - Setup the planetary system when the game starts or when spawned
