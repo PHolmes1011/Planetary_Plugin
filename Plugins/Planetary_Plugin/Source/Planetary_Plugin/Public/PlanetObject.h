@@ -52,6 +52,8 @@ public:
 	UPROPERTY(VisibleAnywhere, DisplayName = "PlanetModel")
 	class UStaticMeshComponent* mPlanetModel;
 
+	class USphereComponent* mPlanetCollision;
+
 	float mTimeStep = 0.1f;
 
 protected:
@@ -71,6 +73,10 @@ public:
 	// In: DeltaTime
 	// Out: NONE
 	void MoveBody(float DeltaTime);
+	// Name: HandleCollisions - Check for sphere overlaps and handle them
+	// In: DeltaTime, bodies
+	// Out: bool
+	bool HandleCollisions(float DeltaTime, TArray<APlanetObject*> bodies);
 private:	
 	// Name: Tick - Update the necessary information each tick
 	// In: DeltaTime

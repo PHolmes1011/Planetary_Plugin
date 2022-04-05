@@ -50,7 +50,6 @@ void APlanetSystem::EditorUpdate(float DeltaTime)
 	for (int32 i = 1; i <= sizeDif; ++i) {
 		// Information we want the object we're about to create to have
 		FActorSpawnParameters planetSpawnInfo;
-		planetSpawnInfo.Name = FName(FString("Planet") += FString::FromInt(mNameI));
 		planetSpawnInfo.Owner = this;											
 
 		// The function to spawn a new planet
@@ -87,7 +86,12 @@ void APlanetSystem::GameUpdate(float DeltaTime)
 	for (int32 i = 0; i < mPlanetObjects.Num(); ++i) {
 		mPlanetObjects[i]->UpdateVelocity(DeltaTime, mPlanetObjects);
 		mPlanetObjects[i]->MoveBody(DeltaTime);
-
+		if (mPlanetObjects[i]->HandleCollisions(DeltaTime, mPlanetObjects)) {
+			mPlanetObjects[i]->Destroy();
+			mPlanetObjects.RemoveAt(i);
+			--mI;
+		}
+			
 		if (mDebug) {
 			FString debugmsg = mPlanetObjects[i]->GetName() + " velocity is: " + 
 				FString::SanitizeFloat(mPlanetObjects[i]->mVelocity.X) +

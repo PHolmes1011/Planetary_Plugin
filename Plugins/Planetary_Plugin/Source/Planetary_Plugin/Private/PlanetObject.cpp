@@ -73,6 +73,9 @@ void APlanetObject::EditorUpdate(float DeltaTime)
 void APlanetObject::GameUpdate(float DeltaTime)
 {
 	mTimeStep += 0.01f;
+
+	// Update the size of the object in real-time
+	mPlanetModel->SetRelativeScale3D(FVector(mSize));
 }
 
 void APlanetObject::DestroyPlanetModel()
@@ -92,12 +95,15 @@ void APlanetObject::CreatePlanetModel()
 	mPlanetModel->SetRelativeScale3D(FVector(mSize));	// and set the size here
 	mPlanetModel->SetStaticMesh(mesh);					// and set the default here
 	mPlanetModel->SetupAttachment(RootComponent);
+
+	mPlanetCollision = CreateDefaultSubobject<USphereComponent>(TEXT("PlanetCollision"));
+	mPlanetCollision->SetHiddenInGame(true, true);			// and set it and its children to be visible
+	mPlanetCollision->SetRelativeScale3D(FVector(mSize));	// and set the size here
+	mPlanetCollision->SetupAttachment(RootComponent);
 }
 
 void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodies)
 {
-	GEngine->ClearOnScreenDebugMessages();
-
 	// For all the bodies calculate their velocity
 	// This is done by "Newton's law of universal gravitation" formula: F = G*m1*m2 / r^2
 	// This code was taken from Sebastian Lague's video on coding solar systems
@@ -116,26 +122,6 @@ void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodie
 
 			// Set that as our velocity multiplied with delta time
 			mVelocity += acceleration * mTimeStep;
-
-			FString debugmsg = "__________________________";
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
-
-			debugmsg = "force = (" + FString::SanitizeFloat(forceDir.X) + ", " + FString::SanitizeFloat(forceDir.Y) + ", " + FString::SanitizeFloat(forceDir.Z) + ") * " + FString::SanitizeFloat(MATHS::G) + " * " + FString::SanitizeFloat(bodies[i]->mMass) + " / " + FString::SanitizeFloat(sqrDist);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
-
-			debugmsg = "forceDir is: " +
-				FString::SanitizeFloat(forceDir.X) +
-				", " + FString::SanitizeFloat(forceDir.Y) +
-				", " + FString::SanitizeFloat(forceDir.Z);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
-
-			debugmsg = "force is: " +
-				FString::SanitizeFloat(force.X) +
-				", " + FString::SanitizeFloat(force.Y) +
-				", " + FString::SanitizeFloat(force.Z);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, debugmsg);
-
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString(GetName()));
 		}
 	}
 }
@@ -145,4 +131,20 @@ void APlanetObject::MoveBody(float DeltaTime)
 	FRotator rotator;
 	mPlanetModel->AddWorldRotation(rotator.Add(mRotVel.Y, mRotVel.Z, mRotVel.X));
 	SetActorLocation(GetActorLocation() += mVelocity * DeltaTime);
+}
+
+bool APlanetObject::HandleCollisions(float DeltaTime, TArray<APlanetObject*> bodies)
+{
+	for (int32 i = 0; i < bodies.Num(); ++i) {
+		if (bodies[i] != this 
+			&& MATHS::SqModulus(bodies[i]->GetActorLocation() - this->GetActorLocation()) < mPlanetCollision->GetScaledSphereRadius()) {
+
+			bodies[i]->mMass += mMass;
+			bodies[i]->mSize += mSize;
+
+			return true;
+		}
+	}
+
+	return false;
 }
