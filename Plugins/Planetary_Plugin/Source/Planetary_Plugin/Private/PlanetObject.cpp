@@ -95,11 +95,6 @@ void APlanetObject::CreatePlanetModel()
 	mPlanetModel->SetRelativeScale3D(FVector(mSize));	// and set the size here
 	mPlanetModel->SetStaticMesh(mesh);					// and set the default here
 	mPlanetModel->SetupAttachment(RootComponent);
-
-	mPlanetCollision = CreateDefaultSubobject<USphereComponent>(TEXT("PlanetCollision"));
-	mPlanetCollision->SetHiddenInGame(true, true);			// and set it and its children to be visible
-	mPlanetCollision->SetRelativeScale3D(FVector(mSize));	// and set the size here
-	mPlanetCollision->SetupAttachment(RootComponent);
 }
 
 void APlanetObject::UpdateVelocity(float DeltaTime, TArray<APlanetObject*> bodies)
@@ -137,7 +132,7 @@ bool APlanetObject::HandleCollisions(float DeltaTime, TArray<APlanetObject*> bod
 {
 	for (int32 i = 0; i < bodies.Num(); ++i) {
 		if (bodies[i] != this 
-			&& MATHS::SqModulus(bodies[i]->GetActorLocation() - this->GetActorLocation()) < mPlanetCollision->GetScaledSphereRadius()) {
+			&& sqrt(MATHS::SqModulus(bodies[i]->GetActorLocation() - this->GetActorLocation())) < bodies[i]->mSize * 10.f) {
 
 			bodies[i]->mMass += mMass;
 			bodies[i]->mSize += mSize;

@@ -52,8 +52,6 @@ public:
 	UPROPERTY(VisibleAnywhere, DisplayName = "PlanetModel")
 	class UStaticMeshComponent* mPlanetModel;
 
-	class USphereComponent* mPlanetCollision;
-
 	float mTimeStep = 0.1f;
 
 protected:
