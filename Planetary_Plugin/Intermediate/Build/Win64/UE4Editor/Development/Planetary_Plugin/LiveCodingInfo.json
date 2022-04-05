@@ -1,0 +1,19 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.Planetary_Plugin.cpp.obj": [
+			"Planetary_Plugin.cpp.obj",
+			"PlanetObjectFactoryNew.cpp.obj",
+			"PlanetSystem.cpp.obj",
+			"PlanetSystemFactoryNew.cpp.obj",
+			"PlanetObject.cpp.obj"
+		],
+		"Module.Planetary_Plugin.gen.cpp.obj": [
+			"Planetary_Plugin.init.gen.cpp.obj",
+			"PlanetObject.gen.cpp.obj",
+			"PlanetObjectFactoryNew.gen.cpp.obj",
+			"PlanetSystem.gen.cpp.obj",
+			"PlanetSystemFactoryNew.gen.cpp.obj"
+		]
+	}
+}
